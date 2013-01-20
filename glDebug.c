@@ -19,34 +19,16 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef TEXTURE2D_H
-#define	TEXTURE2D_H
+#include "glDebug.h"
 
 #include <GLES2/gl2.h>
-#include <stddef.h>
+#include <stdio.h>
 
-#include "pngread.h"
-
-#include "Rect.h"
-
-class Texture2D {
-public:
-    Texture2D(const char *PNGfileName);
-    Texture2D(int textureWidth, int textureHeight, int bytesPerPixel, int pixelFormat, int textureFormat);
-    virtual ~Texture2D();
-    void Bind() const;
-    void WriteTileRect(int tileHeight, int tileIndex, Rect *r) const;
-    void Render(GLuint textureId, void *pixelData);
-    
-    int Width, Height;
-    
-private:
-    int BytesPerPixel, PixelFormat, TextureFormat;
-   // Texture object handle
-   GLuint textureId;
-   void createTexture(void *texels);
-
-};
-
-#endif	/* TEXTURE2D_H */
+void glDebugFn(const char *fileName, int line)
+{
+    GLenum err = glGetError();
+    if (GL_NO_ERROR != err) {
+        fprintf(stderr, "%s:%d: glError() = %d\n", fileName, line, err);
+    }
+}
 
