@@ -2,7 +2,7 @@
     hardware video surface through OpenGL ES.
     Copyright (C) 2013 neagix
 
-	https://github.com/neagix/librpi2d
+        https://github.com/neagix/librpi2d
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ */
 
 #ifndef TEXTURE2D_H
 #define	TEXTURE2D_H
@@ -32,19 +32,20 @@
 class Texture2D {
 public:
     Texture2D(const char *PNGfileName);
-    Texture2D(int textureWidth, int textureHeight, int bytesPerPixel, int pixelFormat, int textureFormat);
+    Texture2D(int textureWidth, int textureHeight, int bytesPerPixel, GLenum pixelFormat, GLenum pixelType);
     virtual ~Texture2D();
     void Bind() const;
     void WriteTileRect(int tileHeight, int tileIndex, Rect *r) const;
-    void Render(GLuint textureId, void *pixelData);
-    
+    void Render(void *pixelData);
+    void Render(void *pixelData, int x, int y, int w, int h);
+
     int Width, Height;
-    
+
 private:
-    int BytesPerPixel, PixelFormat, TextureFormat;
-   // Texture object handle
-   GLuint textureId;
-   void createTexture(void *texels);
+    int BytesPerPixel, PixelFormat, PixelType;
+    // Texture object handle
+    GLuint textureId;
+    void createTexture(void *texels);
 
 };
 

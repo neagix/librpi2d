@@ -76,10 +76,19 @@ Raspberry2D::Raspberry2D(int surfaceWidth, int surfaceHeight) {
 
     // initialize BCM host driver
     bcm_host_init();
+    
+    // get size of LCD (index 0)
+    int success = graphics_get_display_size(0, &DisplayWidth, &DisplayHeight);
+    if (success < 0)
+        throw "Could not get display size";
 }
 
-bool Raspberry2D::Attach(float upScaleRatioW, float upScaleRatioH) {
-    if (!this->CreateNativeWindow(upScaleRatioW, upScaleRatioH)) {
+bool Raspberry2D::Attach() {
+    return Attach(DisplayWidth, DisplayHeight);
+}
+
+bool Raspberry2D::Attach(int scaleW, int scaleH) {
+    if (!this->CreateNativeWindow(scaleW, scaleH)) {
         //        fprintf(stderr, "Could not create native window\n");
         return false;
     }
@@ -127,30 +136,19 @@ bool Raspberry2D::Attach(float upScaleRatioW, float upScaleRatioH) {
 /*
  * initialize BCM native display
  */
-bool Raspberry2D::CreateNativeWindow(float upScaleRatioW, float upScaleRatioH) {
+bool Raspberry2D::CreateNativeWindow(int scaleW, int scaleH) {
     VC_RECT_T dst_rect;
     VC_RECT_T src_rect;
 
-    // get size of LCD (index 0)
-    int success = graphics_get_display_size(0, &display_width, &display_height);
-    if (success < 0)
-        return false;
-
-    float finalW = Width + (display_width - Width) * upScaleRatioW;
-    float finalH = Height + (display_height - Height) * upScaleRatioH;
-
-    //    if (finalW < 2 || finalH < 2)
-    //        throw "Scaled Width or Height are not valid";
-
-    //    printf("Scaled display is %.2fx%.2f\n", finalW, finalH);
-
-    dst_rect.x = ((1 - upScaleRatioW) * (display_width - finalW)) / 2;
-    dst_rect.y = ((1 - upScaleRatioH) * (display_height - finalH)) / 2;
-    dst_rect.width = finalW;
-    dst_rect.height = finalH;
+    dst_rect.x = (DisplayWidth - scaleW) / 2;
+    dst_rect.y = (DisplayHeight - scaleH) / 2;
+    dst_rect.width = scaleW;
+    dst_rect.height = scaleH;
 
     src_rect.x = 0;
     src_rect.y = 0;
+    
+    //TODO: is this always desirable/correct?
     src_rect.width = Width << 16;
     src_rect.height = Height << 16;
 
@@ -166,6 +164,7 @@ bool Raspberry2D::CreateNativeWindow(float upScaleRatioW, float upScaleRatioH) {
     nativeW.height = Height;
     vc_dispmanx_update_submit_sync(dispman_update);
 
+    // store handle to native window
     hWnd = &nativeW;
 
     return true;

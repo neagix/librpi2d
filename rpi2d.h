@@ -2,7 +2,7 @@
     hardware video surface through OpenGL ES.
     Copyright (C) 2013 neagix
 
-	https://github.com/neagix/librpi2d
+        https://github.com/neagix/librpi2d
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ */
 
 #ifndef TEST_H
 #define	TEST_H
@@ -44,8 +44,11 @@ public:
     void DrawHVFlip(const Texture2D &tex) const;
     virtual ~Raspberry2D();
 
-    // attach the native display, with specified upscaling ratio
-    bool Attach(float upScaleRatioW = 0, float upScaleRatioH = 0);
+    // attach the native display, centered viewport and no scaling
+    bool Attach();
+
+    // attach the native display with hardware-accelerated automatic scaling
+    bool Attach(int scaleW, int scaleH);
 
     // remember to call this, unless you prefer staring at a black screen
     void SwapBuffers();
@@ -64,6 +67,11 @@ public:
     // READONLY
     int Width, Height;
 
+    // dispmanx real display size
+    uint32_t DisplayWidth;
+    uint32_t DisplayHeight;
+
+
     float BackgroundColor[3];
 
 private:
@@ -79,8 +87,6 @@ private:
     char *infoLog;
 
     /// native stuff (dispmanx)
-    uint32_t display_width;
-    uint32_t display_height;
     DISPMANX_ELEMENT_HANDLE_T dispman_element;
     DISPMANX_DISPLAY_HANDLE_T dispman_display;
     DISPMANX_UPDATE_HANDLE_T dispman_update;
@@ -97,7 +103,7 @@ private:
     // Handle to a program object
     GLuint vertexShader, fragmentShader;
 
-    bool CreateNativeWindow(float upScaleRatioW, float upScaleRatioH);
+    bool CreateNativeWindow(int scaleW, int scaleH);
     bool CreateEGLContext();
     void Create2DShader();
     void loadProgram(const char *vShaderStr, const char *fShaderStr);

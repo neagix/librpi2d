@@ -2,7 +2,7 @@
     hardware video surface through OpenGL ES.
     Copyright (C) 2013 neagix
 
-	https://github.com/neagix/librpi2d
+        https://github.com/neagix/librpi2d
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,21 +17,21 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ */
 
 #include "Texture2D.h"
 
 #include "glDebug.h"
 
-Texture2D::Texture2D(int textureWidth, int textureHeight, int bytesPerPixel = 3, int pixelFormat = GL_RGB, int textureFormat = GL_UNSIGNED_BYTE) {
-    if (((textureWidth << 1)>>1) != textureWidth || ((textureHeight << 1)>>1) != textureHeight)
+Texture2D::Texture2D(int width, int height, int bytesPerPixel = 3, GLenum pixelFormat = GL_RGB, GLenum pixelType = GL_UNSIGNED_BYTE) {
+    if (((width << 1) >> 1) != width || ((height << 1) >> 1) != height)
         throw "Width and height should be powers of 2";
-    
-    this->Width = textureWidth;
-    this->Height = textureHeight;
+
+    this->Width = width;
+    this->Height = height;
     this->BytesPerPixel = bytesPerPixel;
     this->PixelFormat = pixelFormat;
-    this->TextureFormat = textureFormat;
+    this->PixelType = pixelType;
 
     createTexture(NULL);
 }
@@ -52,7 +52,7 @@ void Texture2D::createTexture(void *texels) {
     //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Load the texture
-    glTexImage2D(GL_TEXTURE_2D, 0, PixelFormat, Width, Height, 0, PixelFormat, TextureFormat, texels);
+    glTexImage2D(GL_TEXTURE_2D, 0, PixelFormat, Width, Height, 0, PixelFormat, PixelType, texels);
     __GL_DEBUG__;
 
     // Set the filtering mode
@@ -65,13 +65,13 @@ void Texture2D::createTexture(void *texels) {
 Texture2D::Texture2D(const char *PNGfileName) {
     gl_texture_t *png_tex = loadPNGTexture(PNGfileName);
 
-    if (((png_tex->Width << 1)>>1) != png_tex->Width || ((png_tex->Height << 1)>>1) != png_tex->Height)
+    if (((png_tex->Width << 1) >> 1) != png_tex->Width || ((png_tex->Height << 1) >> 1) != png_tex->Height)
         throw "Width and height should be powers of 2";
 
     Width = png_tex->Width;
     Height = png_tex->Height;
     PixelFormat = png_tex->PixelFormat;
-    TextureFormat = GL_UNSIGNED_BYTE;
+    PixelType = GL_UNSIGNED_BYTE;
     textureId = png_tex->textureId;
     BytesPerPixel = png_tex->BytesPerPixel;
 
@@ -102,10 +102,14 @@ void Texture2D::Bind() const {
     __GL_DEBUG__;
 }
 
+void Texture2D::Render(void *pixelData) {
+    Render(pixelData, 0, 0, Width, Height);
+}
+
 /*
  * overwrite texels data of the texture
  */
-void Texture2D::Render(GLuint textureId, void *pixelData) {
+void Texture2D::Render(void *pixelData, int x, int y, int w, int h) {
     // Use tightly packed data
     glPixelStorei(GL_UNPACK_ALIGNMENT, BytesPerPixel);
     __GL_DEBUG__;
@@ -115,22 +119,24 @@ void Texture2D::Render(GLuint textureId, void *pixelData) {
     __GL_DEBUG__;
 
     // Load the texture
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Width, Height, PixelFormat, TextureFormat, pixelData);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, PixelFormat, PixelType, pixelData);
     __GL_DEBUG__;
 }
 
 void Texture2D::WriteTileRect(int tileHeight, int tileIndex, Rect *r) const {
-    
-    tileIndex = (Height/tileHeight) - tileIndex - 1;
-    
+
+    tileIndex = (Height / tileHeight) - tileIndex - 1;
+
     r->x1 = 0;
     r->x2 = Width;
     r->y1 = tileIndex * tileHeight;
     r->y2 = r->y1 + tileHeight;
-    
+
     // normalize
-    r->x1 /= Width; r->x2 /= Width;
-    r->y1 /= Height; r->y2 /= Height;    
+    r->x1 /= Width;
+    r->x2 /= Width;
+    r->y1 /= Height;
+    r->y2 /= Height;
 }
 
 Texture2D::~Texture2D() {

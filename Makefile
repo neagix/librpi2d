@@ -28,4 +28,4 @@ testRPI2D:
 	$(CCC) $@.cpp $(CFLAGS) -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d $(INCLUDES) -o $@
 	
 clean:
-	rm -f *.o testRPI2D
+	rm -f *.o testRPI2D librpi2d.so
