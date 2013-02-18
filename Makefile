@@ -7,7 +7,7 @@ CC         = gcc
 
 all:	$(OBJECTS) librpi2d tests
 
-tests: abcd snapshot
+tests: abcd logo
 	
 glDebug.o:
 	$(CC) glDebug.c -Wall -lGL $(INCLUDES) -c -o $@
@@ -27,8 +27,9 @@ librpi2d:
 abcd:
 	$(CCC) examples/basic/$@.cpp $(CFLAGS) -I. -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d $(INCLUDES) -o examples/basic/$@
 
-snapshot:
-	$(CCC) examples/snapshot/$@.cpp $(CFLAGS) -I. -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d $(INCLUDES) -o examples/snapshot/$@
-	
+logo:
+	wget --continue "http://www.raspberrypi.org/wp-content/uploads/2011/10/Raspi-PGB001.png" -O examples/logo/rpilogo.png
+	$(CCC) examples/logo/$@.cpp $(CFLAGS) -I. -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d $(INCLUDES) -o examples/logo/$@
+
 clean:
-	rm -f *.o testRPI2D librpi2d.so
+	rm -f *.o librpi2d.so
