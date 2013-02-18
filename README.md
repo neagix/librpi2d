@@ -16,11 +16,11 @@ NOTE: author is not officially endorsed in Raspberry Pi project, nor this librar
 Getting started
 =====
 
-git clone https://github.com/neagix/librpi2d.git && \
-cd librpi2d && \
-make && \
-cd examples/logo && \
-./logo
+	git clone https://github.com/neagix/librpi2d.git && \
+	cd librpi2d && \
+	make && \
+	cd examples/logo && \
+	./logo
 
 The above will download the source, compile and then display the
 nice Raspberry Pi project logo :)
