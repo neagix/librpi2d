@@ -1,22 +1,22 @@
-/*  rpi2d - Raspberry Pi 2D  lightweight library to access Raspberry PI's
+/*  librpi2d - Raspberry Pi 2D  lightweight library to access Raspberry PI's
     hardware video surface through OpenGL ES.
     Copyright (C) 2013 neagix
 
 	https://github.com/neagix/librpi2d
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    any later version.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
+    This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "rpi2d.h"
@@ -65,7 +65,6 @@ Raspberry2D::Raspberry2D(int surfaceWidth, int surfaceHeight) {
 
     BackgroundColor[0] = BackgroundColor[1] = BackgroundColor[2] = .0f;
 
-    // set below variables to 8 if needed
     AlphaSize = EGL_DONT_CARE;
     DepthSize = EGL_DONT_CARE;
     StencilSize = EGL_DONT_CARE;
@@ -165,7 +164,7 @@ bool Raspberry2D::CreateNativeWindow(int scaleW, int scaleH) {
     vc_dispmanx_update_submit_sync(dispman_update);
 
     // store handle to native window
-    hWnd = &nativeW;
+    this->hWnd = &nativeW;
 
     return true;
 }
@@ -546,4 +545,3 @@ void Raspberry2D::Create2DShader() {
         throw "Could not get s_texture";
 
 }
-
