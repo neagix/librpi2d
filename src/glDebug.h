@@ -22,16 +22,21 @@
 #ifndef GLDEBUG_H
 #define	GLDEBUG_H
 
+#include <GLES2/gl2.h>
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
 void glDebugFn(const char *fileName, int line);
 
-// neagix: enable following to debug OpenGL calls
-//#define __GL_DEBUG__ glDebugFn(__FILE__, __LINE__)
-#define __GL_DEBUG__
+void glFormatError(GLenum err, char *errorMessage);
 
+#ifndef  NO_GL_DEBUG
+#define __GL_DEBUG__ glDebugFn(__FILE__, __LINE__)
+#else
+#define __GL_DEBUG__
+#endif
 
 #ifdef	__cplusplus
 }

@@ -60,7 +60,7 @@ static void GetPNGtextureInfo(int color_type, struct gl_texture_t *texinfo) {
 }
 
 struct gl_texture_t *loadPNGTexture(const char *filename) {
-    struct gl_texture_t *texinfo;
+    struct gl_texture_t texinfo;
     png_byte magic[8];
     png_structp png_ptr;
     png_infop info_ptr;
@@ -89,8 +89,7 @@ struct gl_texture_t *loadPNGTexture(const char *filename) {
     }
 
     /* Create a png read struct */
-    png_ptr = png_create_read_struct
-            (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png_ptr) {
         fclose(fp);
         return NULL;
@@ -104,9 +103,6 @@ struct gl_texture_t *loadPNGTexture(const char *filename) {
         return NULL;
     }
 
-    /* Create our OpenGL texture object */
-    texinfo = (struct gl_texture_t *)
-            malloc(sizeof (struct gl_texture_t));
 
     /* Initialize the setjmp for returning properly after a libpng
        error occured */
@@ -116,13 +112,6 @@ struct gl_texture_t *loadPNGTexture(const char *filename) {
 
         if (row_pointers)
             free(row_pointers);
-
-        if (texinfo) {
-            if (texinfo->texels)
-                free(texinfo->texels);
-
-            free(texinfo);
-        }
 
         return NULL;
     }
@@ -148,7 +137,7 @@ struct gl_texture_t *loadPNGTexture(const char *filename) {
     /* Convert 1-2-4 bits grayscale images to RGB */
     if (color_type == PNG_COLOR_TYPE_GRAY) {
         //TODO: check if this is correct
-        texinfo->BytesPerPixel = 3;
+        texinfo.BytesPerPixel = 3;
         png_set_gray_to_rgb(png_ptr);
     }
 
@@ -166,22 +155,25 @@ struct gl_texture_t *loadPNGTexture(const char *filename) {
     /* Retrieve updated information */
     png_get_IHDR(png_ptr, info_ptr, &w, &h, &bit_depth,
             &color_type, NULL, NULL, NULL);
-    texinfo->Width = w;
-    texinfo->Height = h;
+    texinfo.Width = w;
+    texinfo.Height = h;
 
     /* Get image format and components per pixel */
-    GetPNGtextureInfo(color_type, texinfo);
+    GetPNGtextureInfo(color_type, &texinfo);
 
     /* We can now allocate memory for storing pixel data */
-    texinfo->texels = (GLubyte *) malloc(sizeof (GLubyte) * texinfo->Width
-            * texinfo->Height * texinfo->BytesPerPixel);
+    /* Create our OpenGL texture object */
+    struct gl_texture_t *s_texinfo = (struct gl_texture_t *) malloc(TEXTURE_SIZE(texinfo));
+
+    // copy first part of the structure
+    memcpy(s_texinfo, &texinfo, sizeof(struct gl_texture_t) - 4);
 
     /* Setup a pointer array.  Each one points at the beginning of a row. */
-    row_pointers = (png_bytep *) malloc(sizeof (png_bytep) * texinfo->Height);
+    row_pointers = (png_bytep *) malloc(sizeof (png_bytep) * texinfo.Height);
 
-    for (i = 0; i < texinfo->Height; ++i) {
-        row_pointers[i] = (png_bytep) (texinfo->texels +
-                ((texinfo->Height - (i + 1)) * texinfo->Width * texinfo->BytesPerPixel));
+    for (i = 0; i < texinfo.Height; ++i) {
+        row_pointers[i] = (png_bytep) (s_texinfo->texels +
+                ((texinfo.Height - (i + 1)) * texinfo.Width * texinfo.BytesPerPixel));
     }
 
     /* Read pixel data using row pointers */
@@ -195,9 +187,9 @@ struct gl_texture_t *loadPNGTexture(const char *filename) {
     free(row_pointers);
 
     fclose(fp);
-    
+
 //    if (bit_depth / 8 != texinfo->BytesPerPixel)
 //        fprintf(stderr, "pngread: bit depth is %d, but bytes per pixel are %d\n", bit_depth, texinfo->BytesPerPixel);
-    
-    return texinfo;
+
+    return s_texinfo;
 }

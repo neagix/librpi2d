@@ -40,13 +40,18 @@ struct gl_texture_t {
     GLenum PixelFormat;
     GLint BytesPerPixel;
     GLuint textureId;
-    
+
 /*    int bit_depth; */
 
-    GLubyte *texels;
+    // this will be a placeholder
+    GLubyte texels[4];
 };
 
+#define TEXTURE_SIZE(t) sizeof(struct gl_texture_t) - 4*sizeof(GLubyte) + TEXELS_SIZE(t)
+
 struct gl_texture_t *loadPNGTexture(const char *filename);
+
+#define TEXELS_SIZE(t)    sizeof (GLubyte) * t.Width * t.Height * t.BytesPerPixel
 
 #ifdef	__cplusplus
 }

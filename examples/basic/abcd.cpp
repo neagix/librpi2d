@@ -27,20 +27,20 @@
 using namespace std;
 
 /*
- * 
+ *
  */
 int main(int argc, char** argv) {
 
     Raspberry2D *rpi2D = new Raspberry2D(320, 240);
 
-    // enable support of alpha channel
+    // enable alpha channel (transparency)
     rpi2D->AlphaSize = 8;
 
     // set background color to green
     rpi2D->BackgroundColor[1] = 1;
 
-    // attach surface
-    if (!rpi2D->Attach(0, 0)) {
+    // attach surface - auto scaling
+    if (!rpi2D->Attach()) {
         delete rpi2D;
 
         fprintf(stderr, "Could not attach surface\n");

@@ -22,6 +22,8 @@
 #include "Texture2D.h"
 
 #include "glDebug.h"
+using namespace std;
+#include <string>
 
 Texture2D::Texture2D(int width, int height, int bytesPerPixel = 3, GLenum pixelFormat = GL_RGB, GLenum pixelType = GL_UNSIGNED_BYTE) {
     if (((width << 1) >> 1) != width || ((height << 1) >> 1) != height)
@@ -34,6 +36,18 @@ Texture2D::Texture2D(int width, int height, int bytesPerPixel = 3, GLenum pixelF
     this->PixelType = pixelType;
 
     createTexture(NULL);
+}
+
+void Texture2D::glHandleError() {
+    char errorMessage[512];
+    GLenum err = glGetError();
+    if (GL_NO_ERROR == err)
+        return;
+
+    glFormatError(err, errorMessage);
+    fprintf(stderr, "%s\n", errorMessage);
+
+    throw new std::exception();
 }
 
 void Texture2D::createTexture(void *texels) {
@@ -53,7 +67,7 @@ void Texture2D::createTexture(void *texels) {
 
     // Load the texture
     glTexImage2D(GL_TEXTURE_2D, 0, PixelFormat, Width, Height, 0, PixelFormat, PixelType, texels);
-    __GL_DEBUG__;
+    glHandleError();
 
     // Set the filtering mode
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -77,21 +91,20 @@ Texture2D::Texture2D(const char *PNGfileName) {
 
     createTexture(png_tex->texels);
 
-    // Generate texture 
+    // Generate texture
     /*        glGenTextures(1, &png_tex->textureId);
             glBindTexture(GL_TEXTURE_2D, png_tex->textureId);
 
-            // Setup some parameters for texture filters and mipmapping 
+            // Setup some parameters for texture filters and mipmapping
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             glTexImage2D(GL_TEXTURE_2D, 0, png_tex->PixelFormat,png_tex->Width, png_tex->Height, 0, png_tex->TextureFormat,               GL_UNSIGNED_BYTE, png_tex->texels);
      */
-    /* OpenGL has its own copy of texture data */
-    free(png_tex->texels);
+
     free(png_tex);
 
-    printf("Created %dx%d texture with %d bytes per pixel\n", Width, Height, BytesPerPixel);
+//    printf("Created %dx%d texture with %d bytes per pixel\n", Width, Height, BytesPerPixel);
 }
 
 void Texture2D::Bind() const {

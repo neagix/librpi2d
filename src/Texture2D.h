@@ -46,6 +46,7 @@ private:
     // Texture object handle
     GLuint textureId;
     void createTexture(void *texels);
+    void glHandleError();
 
 };
 
