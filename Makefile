@@ -36,7 +36,8 @@ logo:
 	$(CCC) examples/logo/$@.cpp $(CFLAGS) -Isrc -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d $(INCLUDES) -o examples/logo/$@
 
 animation:
-	$(CCC) examples/animation/$@.cpp $(CFLAGS) -Isrc -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d -lzmq $(INCLUDES) -o examples/animation/$@
+	$(CCC) examples/animation/$@-client.cpp $(CFLAGS) -Isrc -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d -lzmq $(INCLUDES) -o examples/animation/$@-client
+	$(CCC) examples/animation/$@-server.cpp $(CFLAGS) -Isrc -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d -lzmq $(INCLUDES) -o examples/animation/$@-server
 
 clean:
 	rm -f src/*.o librpi2d.so examples/basic/basic examples/logo/logo
