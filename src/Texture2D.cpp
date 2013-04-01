@@ -76,9 +76,7 @@ void Texture2D::createTexture(void *texels) {
     __GL_DEBUG__;
 }
 
-Texture2D::Texture2D(const char *PNGfileName) {
-    gl_texture_t *png_tex = loadPNGTexture(PNGfileName);
-
+void Texture2D::loadFromPngTex(struct gl_texture_t *png_tex) {
     if (((png_tex->Width << 1) >> 1) != png_tex->Width || ((png_tex->Height << 1) >> 1) != png_tex->Height)
         throw "Width and height should be powers of 2";
 
@@ -101,6 +99,16 @@ Texture2D::Texture2D(const char *PNGfileName) {
 
             glTexImage2D(GL_TEXTURE_2D, 0, png_tex->PixelFormat,png_tex->Width, png_tex->Height, 0, png_tex->TextureFormat,               GL_UNSIGNED_BYTE, png_tex->texels);
      */
+}
+
+Texture2D::Texture2D(struct gl_texture_t *png_tex) {
+    loadFromPngTex(png_tex);
+}
+
+Texture2D::Texture2D(const char *PNGfileName) {
+    gl_texture_t *png_tex = loadPNGTexture(PNGfileName);
+
+    loadFromPngTex(png_tex);
 
     free(png_tex);
 

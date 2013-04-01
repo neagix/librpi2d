@@ -9,7 +9,7 @@ SOURCES	    := src/glDebug src/pngread src/Texture2D src/rpi2d
 CCC        = g++
 CC         = gcc
 
-all:	$(SOURCES) librpi2d animation
+all:	$(SOURCES) librpi2d tests
 
 tests: logo abcd
 	
@@ -34,10 +34,6 @@ abcd:
 logo:
 	wget -q --continue "http://www.raspberrypi.org/wp-content/uploads/2011/10/Raspi-PGB001.png" -O examples/logo/rpilogo.png
 	$(CCC) examples/logo/$@.cpp $(CFLAGS) -Isrc -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d $(INCLUDES) -o examples/logo/$@
-
-animation:
-	$(CCC) examples/animation/$@-client.cpp $(CFLAGS) -Isrc -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d -lzmq $(INCLUDES) -o examples/animation/$@-client
-	$(CCC) examples/animation/$@-server.cpp $(CFLAGS) -Isrc -L/opt/vc/lib -L./ -lpng -lGLESv2 -lEGL -lrpi2d -lzmq $(INCLUDES) -o examples/animation/$@-server
 
 clean:
 	rm -f src/*.o librpi2d.so examples/basic/basic examples/logo/logo

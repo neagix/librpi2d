@@ -47,7 +47,9 @@ struct gl_texture_t {
     GLubyte texels[4];
 };
 
-#define TEXTURE_SIZE(t) sizeof(struct gl_texture_t) - 4*sizeof(GLubyte) + TEXELS_SIZE(t)
+#define CORE_TEXTURE_SIZE   sizeof(struct gl_texture_t) - 4*sizeof(GLubyte)
+
+#define TEXTURE_SIZE(t) CORE_TEXTURE_SIZE + TEXELS_SIZE(t)
 
 struct gl_texture_t *loadPNGTexture(const char *filename);
 

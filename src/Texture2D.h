@@ -31,6 +31,7 @@
 
 class Texture2D {
 public:
+    Texture2D(struct gl_texture_t *png_tex);
     Texture2D(const char *PNGfileName);
     Texture2D(int textureWidth, int textureHeight, int bytesPerPixel, GLenum pixelFormat, GLenum pixelType);
     virtual ~Texture2D();
@@ -47,7 +48,7 @@ private:
     GLuint textureId;
     void createTexture(void *texels);
     void glHandleError();
-
+    void loadFromPngTex(struct gl_texture_t *png_tex);
 };
 
 #endif	/* TEXTURE2D_H */
